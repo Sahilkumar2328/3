@@ -1,0 +1,83 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+
+class Account {
+    protected double principal;
+    protected double rate;
+    protected int time;
+
+    public Account(double principal, double rate, int time) {
+        this.principal = principal;
+        this.rate = rate;
+        this.time = time;
+    }
+
+    public double calculateInterest() {
+        return (principal * rate * time) / 100; 
+    }
+}
+
+
+class FDAccount extends Account {
+    public FDAccount(double principal, double rate, int time) {
+        super(principal, rate, time);
+    }
+
+    @Override
+    public double calculateInterest() {
+        return super.calculateInterest();
+    }
+}
+
+class RDAccount extends Account {
+    private int monthlyInstallment;
+
+    public RDAccount(double rate, int time, int monthlyInstallment) {
+        super(0, rate, time);
+        this.monthlyInstallment = monthlyInstallment;
+    }
+
+    @Override
+    public double calculateInterest() {
+        double total = 0;
+        for (int i = 0; i < time * 12; i++) {
+            total += monthlyInstallment * Math.pow(1 + rate / 100, (time * 12 - i) / 12.0);
+        }
+        return total - (monthlyInstallment * time * 12);
+    }
+}
+
+// Main class
+public class InterestCalculator {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        System.out.println("Choose account type: 1 for FD, 2 for RD");
+        int choice = Integer.parseInt(br.readLine());
+
+        if (choice == 1) {
+            System.out.println("Enter principal amount:");
+            double principal = Double.parseDouble(br.readLine());
+            System.out.println("Enter annual interest rate (in %):");
+            double rate = Double.parseDouble(br.readLine());
+            System.out.println("Enter time (in years):");
+            int time = Integer.parseInt(br.readLine());
+
+            FDAccount fd = new FDAccount(principal, rate, time);
+            System.out.println("The interest for FD is: " + fd.calculateInterest());
+        } else if (choice == 2) {
+            System.out.println("Enter monthly installment:");
+            int monthlyInstallment = Integer.parseInt(br.readLine());
+            System.out.println("Enter annual interest rate (in %):");
+            double rate = Double.parseDouble(br.readLine());
+            System.out.println("Enter time (in years):");
+            int time = Integer.parseInt(br.readLine());
+
+            RDAccount rd = new RDAccount(rate, time, monthlyInstallment);
+            System.out.println("The interest for RD is: " + rd.calculateInterest());
+        } else {
+            System.out.println("Invalid choice.");
+        }
+    }
+}
